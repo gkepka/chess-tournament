@@ -7,3 +7,6 @@ class Round:
     def generate_matches(self, tournament):
         return []
         # TODO
+
+    def get_round_no(self):
+        return self.__round_no
