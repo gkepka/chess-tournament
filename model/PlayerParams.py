@@ -1,12 +1,6 @@
 class PlayerParams:
 
-    def __init__(self, player, playerID):
-        self.__player = player
-        self.__points = 0
-        self.__buchholz = 0
-        self.__playerID = playerID
-
-    #In tournaments with odd player number
+    # In tournaments with odd player number
 
     def __init__(self, player, playerID):
         self.__player = player

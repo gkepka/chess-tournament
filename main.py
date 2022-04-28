@@ -1,3 +1,4 @@
-from model.Tournament import Tournament
+from dao.DatabaseInitializer import DatabaseInitializer
 
-tournament = Tournament()
+database_initializer = DatabaseInitializer()
+database_initializer.create_tables()
