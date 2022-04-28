@@ -2,10 +2,12 @@ class Match:
 
     # Result from white player perspective
 
-    def __init__(self, player_white, player_black, result):
+    def __init__(self, tournament, player_white, player_black, result, match_id = None):
+        self.tournament = tournament
         self.player_white = player_white
         self.player_black = player_black
         self.result = result
+        self.match_id = match_id
 
     def get_result(self):
         return self.result
