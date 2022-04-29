@@ -18,11 +18,11 @@ class Tournament:
         if not isinstance(player, Player):
             raise TypeError()
         player_params_dao = PlayerParamsDAO()
-        player_params = player_params_dao.get_player_params_for_player(player)
+        player_params = player_params_dao.get_player_params_for_tournament(self)
         if len(player_params) == 0:
             self.__params_list.append(PlayerParams(player, self))
         else:
-            player_params = [params for params in player_params if params.tournament == self]
+            player_params = [params for params in player_params if params.player.player_id == player.player_id]
             self.__params_list.extend(player_params)
 
     def add_player_params(self, player_params):
