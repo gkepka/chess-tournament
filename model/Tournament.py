@@ -5,16 +5,18 @@ class Tournament:
 
     # Constructor assumes number of rounds as parameter
 
-    def __init__(self, maxRounds):
+    def __init__(self, max_players, max_rounds, tournament_id = None):
         self.__params_list = []
         self.__rounds_list = []
-        self.maxRounds = maxRounds
-        self.scores = [[-1] * maxRounds for _ in range(maxRounds)]
+        self.max_players = max_players
+        self.max_rounds = max_rounds
+        self.tournament_id = tournament_id
+        self.scores = [[-1] * max_rounds for _ in range(max_rounds)]
 
-    def add_player(self, player):
+    def add_player_params(self, player):
         if not isinstance(player, Player):
             raise TypeError()
-        player_params = PlayerParams(player)
+        player_params = PlayerParams(player, self)
         self.__params_list += player_params
 
     def next_round(self):

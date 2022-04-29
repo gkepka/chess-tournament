@@ -1,13 +1,10 @@
 class PlayerParams:
-
-    # In tournaments with odd player number
-
-    def __init__(self, player, playerID):
-        self.__player = player
+    def __init__(self, player, tournament):
+        self.player = player
+        self.tournament = tournament
         self.__points = 0
         self.__buchholz = 0
-        self.__playerID = playerID
-        self.__didPause = False
+        self.__did_pause = False
 
     def set_points(self, points):
         if points < 0:
@@ -25,14 +22,8 @@ class PlayerParams:
     def get_buchholz(self):
         return self.__buchholz
 
-    def get_player(self):
-        return self.__player
+    def set_did_pause(self):
+        self.__did_pause = True
 
-    def get_playerID(self):
-        return self.__playerID
-
-    def set_didPause(self):
-        self.__didPause = True
-
-    def get_didPause(self):
-        return self.__didPause
+    def get_did_pause(self):
+        return self.__did_pause

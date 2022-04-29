@@ -17,7 +17,8 @@ class DatabaseInitializer:
     table_tournament = """
     CREATE TABLE IF NOT EXISTS tournament (
         tournament_id SERIAL PRIMARY KEY,
-        max_places INT NOT NULL
+        max_places INT NOT NULL,
+        max_rounds INT NOT NULL
         );
     """
 
@@ -25,11 +26,9 @@ class DatabaseInitializer:
     CREATE TABLE IF NOT EXISTS player_in_tournament (
         player_id INT NOT NULL,
         tournament_id INT NOT NULL,
-        place INT NOT NULL,
-        rating_gained INT NOT NULL,
         current_score INT NOT NULL,
         current_buchholz INT NOT NULL,
-        status CHAR(1) NOT NULL,
+        did_pause BOOL NOT NULL,
         FOREIGN KEY (player_id) REFERENCES chess_player(player_id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (tournament_id) REFERENCES tournament(tournament_id) ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY (player_id, tournament_id)
