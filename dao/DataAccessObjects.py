@@ -431,8 +431,14 @@ class TournamentDAO:
             cur = conn.cursor()
             cur.execute(sql)
 
+            player_params_dao = PlayerParamsDAO()
+
             for row in cur:
-                 tournaments.append(Tournament(row[1], row[2], row[0]))
+                tournament = Tournament(row[1], row[2], row[0])
+                player_params_list = player_params_dao.get_player_params_for_tournament(tournament)
+                for player_params in player_params_list:
+                    tournament.add_player_params(player_params)
+                tournaments.append(tournament)
 
             conn.commit()
             cur.close()

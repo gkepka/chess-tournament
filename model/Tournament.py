@@ -1,4 +1,5 @@
 from model import *
+from dao.DataAccessObjects import PlayerParamsDAO
 
 
 class Tournament:
@@ -13,11 +14,19 @@ class Tournament:
         self.tournament_id = tournament_id
         self.scores = [[-1] * max_rounds for _ in range(max_rounds)]
 
-    def add_player_params(self, player):
+    def add_player_params_from_player(self, player):
         if not isinstance(player, Player):
             raise TypeError()
-        player_params = PlayerParams(player, self)
-        self.__params_list += player_params
+        player_params_dao = PlayerParamsDAO()
+        player_params = player_params_dao.get_player_params_for_player(player)
+        if len(player_params) == 0:
+            self.__params_list.append(PlayerParams(player, self))
+        else:
+            player_params = [params for params in player_params if params.tournament == self]
+            self.__params_list.extend(player_params)
+
+    def add_player_params(self, player_params):
+        self.__params_list.append(player_params)
 
     def next_round(self):
         next_round = Round(self, len(self.__rounds_list) + 1)
