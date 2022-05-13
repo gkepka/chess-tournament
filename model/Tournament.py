@@ -6,11 +6,13 @@ class Tournament:
 
     # Constructor assumes number of rounds as parameter
 
-    def __init__(self, max_players, max_rounds, tournament_id = None):
+   def __init__(self, max_players, max_rounds, time_format, date, tournament_id = None):
         self.__params_list = []
         self.__rounds_list = []
         self.max_players = max_players
         self.max_rounds = max_rounds
+        self.time_format = time_format
+        self.date = date
         self.tournament_id = tournament_id
         self.scores = [[-1] * max_rounds for _ in range(max_rounds)]
 
