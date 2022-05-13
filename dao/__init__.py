@@ -1,1 +1,1 @@
-__all__ = ["ConnectionProvider", "DatabaseInitializer"]
+__all__ = ["ConnectionProvider", "DatabaseInitializer", "DataAccessObjects"]

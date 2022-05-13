@@ -1,0 +1,98 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'create_tournament_widget.ui'
+#
+# Created by: PyQt5 UI code generator 5.14.1
+#
+# WARNING! All changes made in this file will be lost!
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_CreateTournament(object):
+    def setupUi(self, CreateTournament):
+        CreateTournament.setObjectName("CreateTournament")
+        CreateTournament.resize(1024, 768)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        CreateTournament.setFont(font)
+        self.create_tournament_title = QtWidgets.QLabel(CreateTournament)
+        self.create_tournament_title.setGeometry(QtCore.QRect(6, 6, 1011, 45))
+        font = QtGui.QFont()
+        font.setPointSize(24)
+        font.setBold(True)
+        font.setWeight(75)
+        self.create_tournament_title.setFont(font)
+        self.create_tournament_title.setAlignment(QtCore.Qt.AlignCenter)
+        self.create_tournament_title.setObjectName("create_tournament_title")
+        self.tournament_name_label = QtWidgets.QLabel(CreateTournament)
+        self.tournament_name_label.setGeometry(QtCore.QRect(25, 94, 189, 30))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.tournament_name_label.setFont(font)
+        self.tournament_name_label.setObjectName("tournament_name_label")
+        self.tournament_name_edit = QtWidgets.QLineEdit(CreateTournament)
+        self.tournament_name_edit.setGeometry(QtCore.QRect(220, 94, 231, 32))
+        self.tournament_name_edit.setObjectName("tournament_name_edit")
+        self.tournament_date_label = QtWidgets.QLabel(CreateTournament)
+        self.tournament_date_label.setGeometry(QtCore.QRect(161, 132, 53, 30))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.tournament_date_label.setFont(font)
+        self.tournament_date_label.setObjectName("tournament_date_label")
+        self.tournament_date_edit = QtWidgets.QLineEdit(CreateTournament)
+        self.tournament_date_edit.setGeometry(QtCore.QRect(220, 132, 231, 32))
+        self.tournament_date_edit.setObjectName("tournament_date_edit")
+        self.tournament_rounds_label = QtWidgets.QLabel(CreateTournament)
+        self.tournament_rounds_label.setGeometry(QtCore.QRect(133, 170, 81, 30))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.tournament_rounds_label.setFont(font)
+        self.tournament_rounds_label.setObjectName("tournament_rounds_label")
+        self.tournament_rounds_edit = QtWidgets.QLineEdit(CreateTournament)
+        self.tournament_rounds_edit.setGeometry(QtCore.QRect(220, 170, 231, 32))
+        self.tournament_rounds_edit.setObjectName("tournament_rounds_edit")
+        self.add_player_button = QtWidgets.QPushButton(CreateTournament)
+        self.add_player_button.setGeometry(QtCore.QRect(100, 660, 341, 41))
+        self.add_player_button.setObjectName("add_player_button")
+        self.label_2 = QtWidgets.QLabel(CreateTournament)
+        self.label_2.setGeometry(QtCore.QRect(690, 270, 131, 31))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+        self.delete_player_list = QtWidgets.QListWidget(CreateTournament)
+        self.delete_player_list.setGeometry(QtCore.QRect(570, 310, 341, 341))
+        self.delete_player_list.setObjectName("delete_player_list")
+        self.delete_player_button = QtWidgets.QPushButton(CreateTournament)
+        self.delete_player_button.setGeometry(QtCore.QRect(570, 660, 341, 41))
+        self.delete_player_button.setObjectName("delete_player_button")
+        self.create_tournament_button = QtWidgets.QPushButton(CreateTournament)
+        self.create_tournament_button.setGeometry(QtCore.QRect(590, 90, 271, 51))
+        self.create_tournament_button.setObjectName("create_tournament_button")
+        self.choose_player_list = QtWidgets.QListWidget(CreateTournament)
+        self.choose_player_list.setGeometry(QtCore.QRect(100, 310, 341, 341))
+        self.choose_player_list.setObjectName("choose_player_list")
+        self.label = QtWidgets.QLabel(CreateTournament)
+        self.label.setGeometry(QtCore.QRect(190, 270, 156, 30))
+        font = QtGui.QFont()
+        font.setPointSize(16)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+
+        self.retranslateUi(CreateTournament)
+        QtCore.QMetaObject.connectSlotsByName(CreateTournament)
+
+    def retranslateUi(self, CreateTournament):
+        _translate = QtCore.QCoreApplication.translate
+        CreateTournament.setWindowTitle(_translate("CreateTournament", "Form"))
+        self.create_tournament_title.setText(_translate("CreateTournament", "Create new tournament"))
+        self.tournament_name_label.setText(_translate("CreateTournament", "Tournament name:"))
+        self.tournament_date_label.setText(_translate("CreateTournament", "Date:"))
+        self.tournament_rounds_label.setText(_translate("CreateTournament", "Rounds:"))
+        self.add_player_button.setText(_translate("CreateTournament", "Add player"))
+        self.label_2.setText(_translate("CreateTournament", "Players: "))
+        self.delete_player_button.setText(_translate("CreateTournament", "Remove player"))
+        self.create_tournament_button.setText(_translate("CreateTournament", "Create new tournament"))
+        self.label.setText(_translate("CreateTournament", "Choose players:"))

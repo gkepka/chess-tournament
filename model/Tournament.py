@@ -6,7 +6,7 @@ class Tournament:
 
     # Constructor assumes number of rounds as parameter
 
-   def __init__(self, max_players, max_rounds, time_format, date, tournament_id = None):
+    def __init__(self, max_players, max_rounds, time_format, date, tournament_id = None):
         self.__params_list = []
         self.__rounds_list = []
         self.max_players = max_players
@@ -86,8 +86,8 @@ class Tournament:
     def set_match_score(self, match):
         self.scores[match.player_white.playerID][match.player_black.playerID] = match.result
         if match.result == 0:
-            self.scores[match.player_black.playerID][match.player_white.playerID] == 1
+            self.scores[match.player_black.playerID][match.player_white.playerID] = 1
         if match.result == 1:
-            self.scores[match.player_black.playerID][match.player_white.playerID] == 0
+            self.scores[match.player_black.playerID][match.player_white.playerID] = 0
         if match.result == 0.5:
-            self.scores[match.player_black.playerID][match.player_white.playerID] == 0.5
+            self.scores[match.player_black.playerID][match.player_white.playerID] = 0.5

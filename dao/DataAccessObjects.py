@@ -158,7 +158,7 @@ class PlayerDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception, psycopg2.DatabaseError) as error: # zawęzić wyjątki
             print(error)
         finally:
             if conn is not None:

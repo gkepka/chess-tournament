@@ -57,8 +57,9 @@ class Round:
     def __init__(self, tournament, round_no):
         self.__round_no = round_no
         self.matches = self.generate_matches(tournament)
+        self.tournament = tournament
 
-    #Generates matches for the next round
+    #Generates matches for the next round`
 
     def generate_matches(self):
         RoundGames = []
@@ -69,7 +70,7 @@ class Round:
         for i in range(n):
             for j in range(n):
                 if i == j: 
-                    Games[i][j] == n
+                    Games[i][j] = n
         if (Suduko(Games, 0, 0)):
             puzzle(Games)
         else:
