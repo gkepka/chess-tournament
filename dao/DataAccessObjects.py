@@ -24,8 +24,8 @@ class MatchDAO:
             VALUES (%s, %s, %s, %s) RETURNING match_id;
             """
             cur = conn.cursor()
-            cur.execute(sql, match.tournament.tournament_id, match.player_white.player_id, match.player_black.player_id,
-                        match.get_result())
+            cur.execute(sql, [match.tournament.tournament_id, match.player_white.player_id, match.player_black.player_id,
+                        match.get_result()])
             match_id = cur.fetchone()[0]
             conn.commit()
             cur.close()
@@ -48,7 +48,7 @@ class MatchDAO:
             WHERE match_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, match_id)
+            cur.execute(sql, [match_id])
             row = cur.fetchone()
             tournament_id = row[0]
             player_white_id = row[1]
@@ -83,7 +83,7 @@ class MatchDAO:
             WHERE tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, tournament.tournament_id)
+            cur.execute(sql, [tournament.tournament_id])
 
             for row in cur:
                 matches.append(self.get_match_by_id(row[0]))
@@ -107,7 +107,7 @@ class MatchDAO:
             WHERE match_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, match.match_id)
+            cur.execute(sql, [match.match_id])
             conn.commit()
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
@@ -126,8 +126,8 @@ class MatchDAO:
             (%s, %s, %s, %s) WHERE match_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, match.tournament.tournament_id, match.player_white.player_id, match.player_black.player_id,
-                        match.result, match.match_id)
+            cur.execute(sql, [match.tournament.tournament_id, match.player_white.player_id, match.player_black.player_id,
+                        match.result, match.match_id])
 
             conn.commit()
             cur.close()
@@ -153,17 +153,46 @@ class PlayerDAO:
             VALUES (%s, %s, %s, %s, %s) RETURNING player_id;
             """
             cur = conn.cursor()
-            cur.execute(sql, player.name, player.surname, player.rank, player.title, player.nationality)
+            cur.execute(sql, [player.name, player.surname, player.rank, player.title, player.nationality])
             player_id = cur.fetchone()[0]
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error: # zawęzić wyjątki
+        except psycopg2.DatabaseError as error: # zawęzić wyjątki
             print(error)
         finally:
             if conn is not None:
                 self.__connection_provider.free_connection(conn)
         return player_id
+
+    def get_all_players(self):
+        conn = None
+        players = set()
+        try:
+            conn = self.__connection_provider.get_connection()
+            sql = """
+                    SELECT firstname, lastname, ranking, title, nationality, player_id FROM chess_player;
+                    """
+            cur = conn.cursor()
+            cur.execute(sql)
+            for row in cur:
+                name = row[0]
+                surname = row[1]
+                rank = row[2]
+                title = row[3]
+                nationality = row[4]
+                player_id = row[5]
+                player = Player(name, surname, rank, title, nationality, player_id)
+                players.add(player)
+
+            conn.commit()
+            cur.close()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                self.__connection_provider.free_connection(conn)
+        return players
 
     def get_player_by_id(self, player_id):
         conn = None
@@ -175,7 +204,7 @@ class PlayerDAO:
             WHERE player_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, player_id)
+            cur.execute(sql, [player_id])
             row = cur.fetchone()
             name = row[0]
             surname = row[1]
@@ -204,7 +233,7 @@ class PlayerDAO:
             WHERE player_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, player.player_id)
+            cur.execute(sql, [player.player_id])
             conn.commit()
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
@@ -223,7 +252,7 @@ class PlayerDAO:
             (%s, %s, %s, %s, %s) WHERE player_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, player.name, player.surname, player.rank, player.title, player.nationality, player.player_id)
+            cur.execute(sql, [player.name, player.surname, player.rank, player.title, player.nationality, player.player_id])
 
             conn.commit()
             cur.close()
@@ -248,8 +277,8 @@ class PlayerParamsDAO:
             VALUES (%s, %s, %s, %s, %s);
             """
             cur = conn.cursor()
-            cur.execute(sql, player_params.player.player_id, player_params.tournament.tournament_id,
-                        player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause())
+            cur.execute(sql, [player_params.player.player_id, player_params.tournament.tournament_id,
+                        player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause()])
             conn.commit()
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
@@ -270,7 +299,7 @@ class PlayerParamsDAO:
             WHERE player_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, player.player_id)
+            cur.execute(sql, [player.player_id])
 
             player_dao = PlayerDAO()
             tournament_dao = TournamentDAO()
@@ -305,7 +334,7 @@ class PlayerParamsDAO:
             WHERE tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, tournament.tournament_id)
+            cur.execute(sql, [tournament.tournament_id])
 
             player_dao = PlayerDAO()
             tournament_dao = TournamentDAO()
@@ -338,7 +367,7 @@ class PlayerParamsDAO:
             WHERE player_id = %s AND tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, player_params.player.player_id, player_params.tournament.tournament_id)
+            cur.execute(sql, [player_params.player.player_id, player_params.tournament.tournament_id])
             conn.commit()
             cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
@@ -357,8 +386,8 @@ class PlayerParamsDAO:
             (%s, %s, %s) WHERE player_id = %s AND tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause(),
-                        player_params.player.player_id, player_params.tournament.tournament_id)
+            cur.execute(sql, [player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause(),
+                        player_params.player.player_id, player_params.tournament.tournament_id])
 
             conn.commit()
             cur.close()
@@ -383,7 +412,7 @@ class TournamentDAO:
             VALUES (%s, %s) RETURNING tournament_id;
             """
             cur = conn.cursor()
-            cur.execute(sql, tournament.max_players, tournament.max_rounds)
+            cur.execute(sql, [tournament.max_players, tournament.max_rounds])
 
             tournament_id = cur.fetchone()[0]
 
@@ -406,7 +435,7 @@ class TournamentDAO:
             FROM tournament WHERE tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, tournament_id)
+            cur.execute(sql, [tournament_id])
             row = cur.fetchone()
             tournament = Tournament(row[0], row[1], tournament_id)
 
@@ -458,7 +487,7 @@ class TournamentDAO:
             WHERE tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, tournament.tournament_id)
+            cur.execute(sql, [tournament.tournament_id])
 
             conn.commit()
             cur.close()
@@ -477,7 +506,7 @@ class TournamentDAO:
             (%s, %s) WHERE tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, tournament.max_players, tournament.max_rounds, tournament.tournament_id)
+            cur.execute(sql, [tournament.max_players, tournament.max_rounds, tournament.tournament_id])
 
             conn.commit()
             cur.close()
