@@ -1,5 +1,5 @@
 import unittest
-
+import model
 
 class Buchholz_test(unittest.TestCase):
     def test_get_score(self):

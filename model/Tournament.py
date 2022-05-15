@@ -1,5 +1,7 @@
-from model import *
-from dao.DataAccessObjects import PlayerParamsDAO
+from model.Round import Round
+from model.PlayerParams import PlayerParams
+from model.Player import Player
+import dao.DataAccessObjects as dao
 
 
 class Tournament:
@@ -19,7 +21,7 @@ class Tournament:
     def add_player_params_from_player(self, player):
         if not isinstance(player, Player):
             raise TypeError()
-        player_params_dao = PlayerParamsDAO()
+        player_params_dao = dao.PlayerParamsDAO()
         player_params = player_params_dao.get_player_params_for_tournament(self)
         if len(player_params) == 0:
             self.__params_list.append(PlayerParams(player, self))
