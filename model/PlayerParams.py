@@ -22,8 +22,8 @@ class PlayerParams:
     def get_buchholz(self):
         return self.__buchholz
 
-    def set_did_pause(self):
-        self.__did_pause = True
+    def set_did_pause(self, did_pause):
+        self.__did_pause = did_pause
 
     def get_did_pause(self):
         return self.__did_pause

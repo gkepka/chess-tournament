@@ -8,15 +8,14 @@ class Tournament:
 
     # Constructor assumes number of rounds as parameter
 
-    def __init__(self, max_players, max_rounds, time_format, date, tournament_id = None):
-        self.__params_list = []
-        self.__rounds_list = []
-        self.max_players = max_players
-        self.max_rounds = max_rounds
-        self.time_format = time_format
+    def __init__(self, name, date, rounds, tournament_id=None):
+        self.params_list = []
+        self.rounds_list = []
+        self.name = name
+        self.rounds = rounds
         self.date = date
         self.tournament_id = tournament_id
-        self.scores = [[-1] * max_rounds for _ in range(max_rounds)]
+        self.scores = [[-1] * rounds for _ in range(rounds)]
 
     def add_player_params_from_player(self, player):
         if not isinstance(player, Player):
@@ -24,22 +23,22 @@ class Tournament:
         player_params_dao = dao.PlayerParamsDAO()
         player_params = player_params_dao.get_player_params_for_tournament(self)
         if len(player_params) == 0:
-            self.__params_list.append(PlayerParams(player, self))
+            self.params_list.append(PlayerParams(player, self))
         else:
             player_params = [params for params in player_params if params.player.player_id == player.player_id]
-            self.__params_list.extend(player_params)
+            self.params_list.extend(player_params)
 
     def add_player_params(self, player_params):
-        self.__params_list.append(player_params)
+        self.params_list.append(player_params)
 
     def next_round(self):
-        next_round = Round(self, len(self.__rounds_list) + 1)
-        self.__rounds_list += next_round
+        next_round = Round(self, len(self.rounds_list) + 1)
+        self.rounds_list += next_round
 
     # Function count_scores counts number of points of a player(playerID)
     def count_scores(self, playerID):
         sum = 0
-        for i in range(len(self.__params_list)):
+        for i in range(len(self.params_list)):
             if self.scores[i][playerID] != -1:
                 sum += self.scores[i][playerID]
         return sum
@@ -48,7 +47,7 @@ class Tournament:
 
     def count_Buholtz(self, playerID):
         sum = 0
-        for i in range(len(self.__params_list)):
+        for i in range(len(self.params_list)):
             if self.scores[i][playerID] != -1:
                 sum += self.count_scores(playerID)
         return sum
@@ -64,14 +63,14 @@ class Tournament:
 
     def get_scores(self):
         points = []
-        for i in range(len(self.__params_list)):
+        for i in range(len(self.params_list)):
             points.append((i, self.count_scores(i), self.count_Buholtz(i)))
         self.Sort_Tuple(points, 1)
-        for i in range(len(self.__params_list) - 1):
+        for i in range(len(self.params_list) - 1):
             if points[i][1] == points[i + 1][1]:
                 if self.count_Buholtz(i + 1) > self.count_Buholtz(i):
                     points[i], points[i + 1] = points[i + 1], points[i]
-        for i in range(len(self.__params_list) - 1):
+        for i in range(len(self.params_list) - 1):
             if points[i][1] == points[i + 1]:
                 if points[i][2] == points[i + 1][2]:
                     if self.scores[points[i][0]][points[i + 1][0]] == 0:

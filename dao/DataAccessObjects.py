@@ -1,6 +1,6 @@
 import psycopg2
 
-from dao.ConnectionProvider import ConnectionProvider
+from dao.ConnectionProvider import get_connection_provider
 
 from model.Match import Match
 from model.Tournament import Tournament
@@ -11,7 +11,7 @@ from model.PlayerParams import PlayerParams
 class MatchDAO:
 
     def __init__(self):
-        self.__connection_provider = ConnectionProvider()
+        self.__connection_provider = get_connection_provider()
 
     def insert_match(self, match):
         """Inserts match into database, returns generated match_id"""
@@ -140,7 +140,7 @@ class MatchDAO:
 
 class PlayerDAO:
     def __init__(self):
-        self.__connection_provider = ConnectionProvider()
+        self.__connection_provider = get_connection_provider()
 
     def insert_player(self, player):
         """Inserts player into database, returns generated player_id"""
@@ -149,11 +149,11 @@ class PlayerDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            INSERT INTO chess_player(firstname, lastname, ranking, title, nationality)
-            VALUES (%s, %s, %s, %s, %s) RETURNING player_id;
+            INSERT INTO chess_player(first_name, last_name, ranking, title, nationality, chess_club)
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING player_id;
             """
             cur = conn.cursor()
-            cur.execute(sql, [player.name, player.surname, player.rank, player.title, player.nationality])
+            cur.execute(sql, [player.name, player.surname, player.rank, player.title, player.nationality, player.chess_club])
             player_id = cur.fetchone()[0]
 
             conn.commit()
@@ -171,7 +171,7 @@ class PlayerDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-                    SELECT firstname, lastname, ranking, title, nationality, player_id FROM chess_player;
+                    SELECT first_name, last_name, ranking, title, nationality,chess_club, player_id FROM chess_player;
                     """
             cur = conn.cursor()
             cur.execute(sql)
@@ -181,8 +181,9 @@ class PlayerDAO:
                 rank = row[2]
                 title = row[3]
                 nationality = row[4]
-                player_id = row[5]
-                player = Player(name, surname, rank, title, nationality, player_id)
+                chess_club = row[5]
+                player_id = row[6]
+                player = Player(name, surname, rank, title, nationality, chess_club, player_id)
                 players.add(player)
 
             conn.commit()
@@ -200,7 +201,7 @@ class PlayerDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            SELECT firstname, lastname, ranking, title, nationality FROM chess_player
+            SELECT first_name, last_name, ranking, title, nationality, chess_club FROM chess_player
             WHERE player_id = %s;
             """
             cur = conn.cursor()
@@ -211,8 +212,9 @@ class PlayerDAO:
             rank = row[2]
             title = row[3]
             nationality = row[4]
+            chess_club = row[5]
 
-            player = Player(name, surname, rank, title, nationality, player_id)
+            player = Player(name, surname, rank, title, nationality, chess_club, player_id)
 
             conn.commit()
             cur.close()
@@ -248,11 +250,11 @@ class PlayerDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            UPDATE chess_player SET (firstname, lastname, ranking, title, nationality) =
-            (%s, %s, %s, %s, %s) WHERE player_id = %s;
+            UPDATE chess_player SET (first_name, last_name, ranking, title, nationality, chess_club) =
+            (%s, %s, %s, %s, %s, %s) WHERE player_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, [player.name, player.surname, player.rank, player.title, player.nationality, player.player_id])
+            cur.execute(sql, [player.name, player.surname, player.rank, player.title, player.nationality, player.chess_club, player.player_id])
 
             conn.commit()
             cur.close()
@@ -265,7 +267,7 @@ class PlayerDAO:
 
 class PlayerParamsDAO:
     def __init__(self):
-        self.__connection_provider = ConnectionProvider()
+        self.__connection_provider = get_connection_provider()
 
     def insert_player_params(self, player_params):
         """Inserts player_params into database"""
@@ -286,6 +288,10 @@ class PlayerParamsDAO:
         finally:
             if conn is not None:
                 self.__connection_provider.free_connection(conn)
+
+    def insert_player_params_list(self, player_params_list):
+        for player_params in player_params_list:
+            self.insert_player_params(player_params)
 
     def get_player_params_for_player(self, player):
         """Returns list of player_params for player"""
@@ -343,14 +349,14 @@ class PlayerParamsDAO:
                 player = player_dao.get_player_by_id(row[0])
                 tournament = tournament_dao.get_tournament_by_id(row[1])
                 player_params = PlayerParams(player, tournament)
-                player_params.get_points(row[2])
+                player_params.set_points(row[2])
                 player_params.set_buchholz(row[3])
                 player_params.set_did_pause(row[4])
                 player_params_list.append(player_params)
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -400,7 +406,7 @@ class PlayerParamsDAO:
 
 class TournamentDAO:
     def __init__(self):
-        self.__connection_provider = ConnectionProvider()
+        self.__connection_provider = get_connection_provider()
 
     def insert_tournament(self, tournament):
         conn = None
@@ -408,11 +414,11 @@ class TournamentDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            INSERT INTO tournament(max_places, max_rounds)
-            VALUES (%s, %s) RETURNING tournament_id;
+            INSERT INTO tournament(name, tournament_date, rounds)
+            VALUES (%s, %s, %s) RETURNING tournament_id;
             """
             cur = conn.cursor()
-            cur.execute(sql, [tournament.max_players, tournament.max_rounds])
+            cur.execute(sql, [tournament.name, tournament.date, tournament.rounds])
 
             tournament_id = cur.fetchone()[0]
 
@@ -431,13 +437,13 @@ class TournamentDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            SELECT max_places, max_rounds
+            SELECT name, tournament_date, rounds
             FROM tournament WHERE tournament_id = %s;
             """
             cur = conn.cursor()
             cur.execute(sql, [tournament_id])
             row = cur.fetchone()
-            tournament = Tournament(row[0], row[1], tournament_id)
+            tournament = Tournament(row[0], row[1], row[2], tournament_id)
 
             conn.commit()
             cur.close()
@@ -454,7 +460,7 @@ class TournamentDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            SELECT tournament_id, max_places, max_rounds
+            SELECT tournament_id, name, tournament_date, rounds
             FROM tournament;
             """
             cur = conn.cursor()
@@ -463,7 +469,7 @@ class TournamentDAO:
             player_params_dao = PlayerParamsDAO()
 
             for row in cur:
-                tournament = Tournament(row[1], row[2], row[0])
+                tournament = Tournament(row[1], row[2], row[3], row[0])
                 player_params_list = player_params_dao.get_player_params_for_tournament(tournament)
                 for player_params in player_params_list:
                     tournament.add_player_params(player_params)
@@ -502,11 +508,11 @@ class TournamentDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            UPDATE tournament SET (max_places, max_rounds) =
-            (%s, %s) WHERE tournament_id = %s;
+            UPDATE tournament SET (name, tournament_date, rounds) =
+            (%s, %s, %s) WHERE tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, [tournament.max_players, tournament.max_rounds, tournament.tournament_id])
+            cur.execute(sql, [tournament.name, tournament.date, tournament.rounds])
 
             conn.commit()
             cur.close()

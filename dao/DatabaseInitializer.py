@@ -1,24 +1,26 @@
 import psycopg2
-from dao.ConnectionProvider import ConnectionProvider
+from dao.ConnectionProvider import get_connection_provider
 
 
 class DatabaseInitializer:
     table_player = """
     CREATE TABLE IF NOT EXISTS chess_player (
         player_id SERIAL PRIMARY KEY,
-        firstname VARCHAR(20) NOT NULL,
-        lastname VARCHAR(20) NOT NULL,
+        first_name VARCHAR(20) NOT NULL,
+        last_name VARCHAR(20) NOT NULL,
         ranking INT NOT NULL,
         title VARCHAR(10),
-        nationality VARCHAR(3) NOT NULL
+        nationality VARCHAR(3) NOT NULL,
+        chess_club VARCHAR(20)
         );
     """
 
     table_tournament = """
     CREATE TABLE IF NOT EXISTS tournament (
         tournament_id SERIAL PRIMARY KEY,
-        max_places INT NOT NULL,
-        max_rounds INT NOT NULL
+        name VARCHAR(20) NOT NULL,
+        tournament_date DATE, 
+        rounds INT NOT NULL
         );
     """
 
@@ -49,7 +51,7 @@ class DatabaseInitializer:
     """
 
     def __init__(self):
-        self.connection_provider = ConnectionProvider()
+        self.connection_provider = get_connection_provider()
 
     def create_tables(self):
         conn = None
