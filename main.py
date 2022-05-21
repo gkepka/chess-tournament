@@ -140,9 +140,27 @@ class CreateTournamentWidget(qtw.QWidget):
             table_to.setItem(row_to_add, 2, qtw.QTableWidgetItem(player_id))
 
 
+class DeleteTournamentDialog(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+
+        buttons = qtw.QDialogButtonBox.Ok | qtw.QDialogButtonBox.Cancel
+        self.buttonBox = qtw.QDialogButtonBox(buttons)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = qtw.QVBoxLayout()
+        message = qtw.QLabel("Delete tournament?")
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
+
 class ListTournamentsWidget(qtw.QWidget):
 
     tournament_chosen = qtc.pyqtSignal(int)
+    tournament_to_delete = qtc.pyqtSignal(int)
+    tournament_to_edit = qtc.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(ListTournamentsWidget, self).__init__(parent)
@@ -160,6 +178,8 @@ class ListTournamentsWidget(qtw.QWidget):
         self.fill_tournaments_table()
 
         self.ui.choose_button.clicked.connect(self.choose_tournament)
+        self.ui.delete_button.clicked.connect(self.delete_tournament)
+        self.ui.edit_button.clicked.connect(self.edit_tournament)
 
     def fill_tournaments_table(self):
         tournament_dao = TournamentDAO()
@@ -178,6 +198,19 @@ class ListTournamentsWidget(qtw.QWidget):
             id = int(self.ui.tournaments_table.item(current_row, 3).text())
             self.tournament_chosen.emit(id)
 
+    def delete_tournament(self):
+        current_row = self.ui.tournaments_table.currentRow()
+        if current_row != -1:
+            id = int(self.ui.tournaments_table.item(current_row, 3).text())
+            dialog = DeleteTournamentDialog()
+            if dialog.exec_():
+                self.tournament_to_delete.emit(id)
+
+    def edit_tournament(self):
+        current_row = self.ui.tournaments_table.currentRow()
+        if current_row != -1:
+            id = int(self.ui.tournaments_table.item(current_row, 3).text())
+            self.tournament_to_edit.emit(id)
 
 class PlayerRankingWidget(qtw.QWidget):
 
@@ -239,7 +272,8 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         if self.list_tournaments_widget is None:
             self.list_tournaments_widget = ListTournamentsWidget(self)
             self.list_tournaments_widget.tournament_chosen.connect(self.set_current_tournament)
-            # TODO podpiąć sloty do sygnałów
+            self.list_tournaments_widget.tournament_to_delete.connect(self.delete_tournament)
+            self.list_tournaments_widget.tournament_to_edit.connect(self.edit_tournament)
         if self.central_widget.indexOf(self.list_tournaments_widget) == -1:
             self.central_widget.addWidget(self.list_tournaments_widget)
         self.central_widget.setCurrentWidget(self.list_tournaments_widget)
@@ -283,6 +317,15 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         tournament_dao = TournamentDAO()
         self.current_tournament = tournament_dao.get_tournament_by_id(tournament_id)
         self.statusBar().showMessage(f'Current tournament: {self.current_tournament.name}')
+
+    @qtc.pyqtSlot(int)
+    def delete_tournament(self, tournament_id):
+        tournament_dao = TournamentDAO()
+        tournament_dao.delete_tournament_by_id(tournament_id)
+
+    @qtc.pyqtSlot(int)
+    def edit_tournament(self, tournament_id):
+        pass
 
 
 if __name__ == '__main__':

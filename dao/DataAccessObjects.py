@@ -503,6 +503,25 @@ class TournamentDAO:
             if conn is not None:
                 self.__connection_provider.free_connection(conn)
 
+    def delete_tournament_by_id(self, tournament_id):
+        conn = None
+        try:
+            conn = self.__connection_provider.get_connection()
+            sql = """
+            DELETE FROM tournament
+            WHERE tournament_id = %s;
+            """
+            cur = conn.cursor()
+            cur.execute(sql, [tournament_id])
+
+            conn.commit()
+            cur.close()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                self.__connection_provider.free_connection(conn)
+
     def update_tournament(self, tournament):
         conn = None
         try:
