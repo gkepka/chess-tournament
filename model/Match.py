@@ -2,8 +2,9 @@ class Match:
 
     # Result from white player perspective
 
-    def __init__(self, tournament, player_white, player_black, result, match_id = None):
+    def __init__(self, tournament, round, player_white, player_black, result, match_id = None):
         self.tournament = tournament
+        self.round = round
         self.player_white = player_white
         self.player_black = player_black
         self.result = result

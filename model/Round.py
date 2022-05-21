@@ -44,10 +44,11 @@ def Suduko(grid, row, col):
 
 class Round:
 
-    def __init__(self, tournament, round_no):
+    def __init__(self, tournament, round_no, round_id=None):
         self.__round_no = round_no
-        self.matches = self.generate_matches(tournament)
+        self.matches = self.generate_matches()
         self.tournament = tournament
+        self.round_id = round_id
 
     # Generates matches for the next round`
 
@@ -71,11 +72,11 @@ class Round:
                     if i > j:
                         if Games[i][j] == self.__round_no:
                             if self.__round_no % 2 == 0:
-                                Match1 = Match(self.tournament, self.tournament.params_list[i],
+                                Match1 = Match(self.tournament, self, self.tournament.params_list[i],
                                                self.tournament.params_list[j], None, None)
                                 RoundGames.append(Match1)
                             else:
-                                Match1 = Match(self.tournament, self.tournament.params_list[j],
+                                Match1 = Match(self.tournament, self, self.tournament.params_list[j],
                                                self.tournament.params_list[i], None, None)
                                 RoundGames.append(Match1)
         else:
@@ -85,11 +86,11 @@ class Round:
                         if Games[i][j] == self.__round_no:
                             if i != n - 1 and j != n - 1:
                                 if self.__round_no % 2 == 0:
-                                    Match1 = Match(self.tournament, self.tournament.params_list[i],
+                                    Match1 = Match(self.tournament, self, self.tournament.params_list[i],
                                                    self.tournament.params_list[j], None, None)
                                     RoundGames.append(Match1)
                                 else:
-                                    Match1 = Match(self.tournament, self.tournament.params_list[j],
+                                    Match1 = Match(self.tournament, self, self.tournament.params_list[j],
                                                    self.tournament.params_list[i], None, None)
                                     RoundGames.append(Match1)
         return RoundGames
