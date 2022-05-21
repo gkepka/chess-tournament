@@ -6,6 +6,7 @@ from view.add_player_widget import Ui_AddPlayer
 from view.create_tournament_widget import Ui_CreateTournament
 from view.player_ranking_widget import Ui_RankingView
 from view.start_widget import Ui_StartWidget
+from view.list_tournaments_widget import Ui_ListTournaments
 from dao.DataAccessObjects import PlayerDAO, TournamentDAO, PlayerParamsDAO
 from dao.DatabaseInitializer import DatabaseInitializer
 from model.Player import Player
@@ -139,6 +140,45 @@ class CreateTournamentWidget(qtw.QWidget):
             table_to.setItem(row_to_add, 2, qtw.QTableWidgetItem(player_id))
 
 
+class ListTournamentsWidget(qtw.QWidget):
+
+    tournament_chosen = qtc.pyqtSignal(int)
+
+    def __init__(self, parent=None):
+        super(ListTournamentsWidget, self).__init__(parent)
+        self.ui = Ui_ListTournaments()
+        self.ui.setupUi(self)
+
+        self.ui.tournaments_table.setColumnCount(4)
+        self.ui.tournaments_table.setHorizontalHeaderLabels(('Name', 'Rounds', 'Date', 'ID'))
+        self.ui.tournaments_table.setColumnWidth(0, 240)
+        self.ui.tournaments_table.setColumnWidth(1, 90)
+        self.ui.tournaments_table.setColumnWidth(2, 150)
+        self.ui.tournaments_table.setColumnWidth(3, 100)
+        self.ui.tournaments_table.setHorizontalScrollBarPolicy(qtc.Qt.ScrollBarAlwaysOff)
+
+        self.fill_tournaments_table()
+
+        self.ui.choose_button.clicked.connect(self.choose_tournament)
+
+    def fill_tournaments_table(self):
+        tournament_dao = TournamentDAO()
+        tournaments = tournament_dao.get_all_tournaments()
+        current_row = 0
+        for tournament in tournaments:
+            self.ui.tournaments_table.insertRow(current_row)
+            self.ui.tournaments_table.setItem(current_row, 0, qtw.QTableWidgetItem(tournament.name))
+            self.ui.tournaments_table.setItem(current_row, 1, qtw.QTableWidgetItem(str(tournament.rounds)))
+            self.ui.tournaments_table.setItem(current_row, 2, qtw.QTableWidgetItem(str(tournament.date)))
+            self.ui.tournaments_table.setItem(current_row, 3, qtw.QTableWidgetItem(str(tournament.tournament_id)))
+
+    def choose_tournament(self):
+        current_row = self.ui.tournaments_table.currentRow()
+        if current_row != -1:
+            id = int(self.ui.tournaments_table.item(current_row, 3).text())
+            self.tournament_chosen.emit(id)
+
+
 class PlayerRankingWidget(qtw.QWidget):
 
     def __init__(self, parent=None):
@@ -160,9 +200,12 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Your code goes here
+        self.current_tournament = None
+
         self.add_player_widget = None
         self.create_tournament_widget = None
         self.player_ranking_widget = None
+        self.list_tournaments_widget = None
         self.resize(1024, 768)
 
         self.central_widget = qtw.QStackedWidget()
@@ -193,7 +236,13 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         self.central_widget.setCurrentWidget(self.create_tournament_widget)
 
     def show_tournament_list_widget(self):
-        pass
+        if self.list_tournaments_widget is None:
+            self.list_tournaments_widget = ListTournamentsWidget(self)
+            self.list_tournaments_widget.tournament_chosen.connect(self.set_current_tournament)
+            # TODO podpiąć sloty do sygnałów
+        if self.central_widget.indexOf(self.list_tournaments_widget) == -1:
+            self.central_widget.addWidget(self.list_tournaments_widget)
+        self.central_widget.setCurrentWidget(self.list_tournaments_widget)
 
     def show_add_player_widget(self):
         if self.add_player_widget is None:
@@ -229,6 +278,12 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         player_params_dao = PlayerParamsDAO()
         player_params_dao.insert_player_params_list(tournament.params_list)
 
+    @qtc.pyqtSlot(int)
+    def set_current_tournament(self, tournament_id):
+        tournament_dao = TournamentDAO()
+        self.current_tournament = tournament_dao.get_tournament_by_id(tournament_id)
+        self.statusBar().showMessage(f'Current tournament: {self.current_tournament.name}')
+
 
 if __name__ == '__main__':
     database_initializer = DatabaseInitializer()
@@ -240,5 +295,3 @@ if __name__ == '__main__':
     widget.show()
 
     sys.exit(app.exec_())
-
-
