@@ -75,15 +75,15 @@ class CreateTournamentWidget(qtw.QWidget):
         self.ui.delete_player_table.setColumnWidth(2, 70)
         self.ui.delete_player_table.setHorizontalScrollBarPolicy(qtc.Qt.ScrollBarAlwaysOff)
 
-        player_dao = PlayerDAO()
-        self.fill_add_player_table(player_dao.get_all_players())
+        self.player_dao = PlayerDAO()
+        self.fill_add_player_table(self.player_dao.get_all_players())
 
         self.ui.create_tournament_button.clicked.connect(self.add_tournament)
         self.ui.add_player_button.clicked.connect(self.add_player_to_tournament)
         self.ui.delete_player_button.clicked.connect(self.delete_player_from_tournament)
 
     def fill_add_player_table(self, players):
-        self.ui.add_player_table.clearContents()
+        self.ui.add_player_table.setRowCount(0)
         current_row = 0
         for player in players:
             print(player.rank)
@@ -100,10 +100,9 @@ class CreateTournamentWidget(qtw.QWidget):
             tournament_date = date.fromisoformat(self.ui.tournament_date_edit.text())
             tournament_rounds = int(self.ui.tournament_rounds_edit.text())
             added_players = []
-            player_dao = PlayerDAO()
             for i in range(self.ui.delete_player_table.rowCount()):
                 player_id = int(self.ui.delete_player_table.item(i, 2).text())
-                added_players.append(player_dao.get_player_by_id(player_id))
+                added_players.append(self.player_dao.get_player_by_id(player_id))
         except ValueError as e:
             if str(e).count("invalid literal for int()") != 0:
                 qtw.QMessageBox.critical(self, 'Error', 'Round count must be a number')
@@ -113,6 +112,10 @@ class CreateTournamentWidget(qtw.QWidget):
                 self.ui.tournament_date_edit.clear()
         else:
             self.tournament_added.emit(tournament_name, str(tournament_date), tournament_rounds, added_players)
+            self.clear_edits()
+            self.ui.delete_player_table.setRowCount(0)
+            self.fill_add_player_table(self.player_dao.get_all_players())
+
 
     def add_player_to_tournament(self):
         self.move_player_between_tables(self.ui.add_player_table, self.ui.delete_player_table)
@@ -175,15 +178,22 @@ class ListTournamentsWidget(qtw.QWidget):
         self.ui.tournaments_table.setColumnWidth(3, 100)
         self.ui.tournaments_table.setHorizontalScrollBarPolicy(qtc.Qt.ScrollBarAlwaysOff)
 
-        self.fill_tournaments_table()
+        self.tournament_dao = TournamentDAO()
+        tournaments = self.tournament_dao.get_all_tournaments()
+
+        self.fill_tournaments_table(tournaments)
+
+        self.ui.sort_box.addItem("Name")
+        self.ui.sort_box.addItem("Date")
+
+        self.ui.sort_box.activated[str].connect(self.sort_table)
 
         self.ui.choose_button.clicked.connect(self.choose_tournament)
         self.ui.delete_button.clicked.connect(self.delete_tournament)
         self.ui.edit_button.clicked.connect(self.edit_tournament)
 
-    def fill_tournaments_table(self):
-        tournament_dao = TournamentDAO()
-        tournaments = tournament_dao.get_all_tournaments()
+    def fill_tournaments_table(self, tournaments):
+        self.ui.tournaments_table.setRowCount(0)
         current_row = 0
         for tournament in tournaments:
             self.ui.tournaments_table.insertRow(current_row)
@@ -191,6 +201,16 @@ class ListTournamentsWidget(qtw.QWidget):
             self.ui.tournaments_table.setItem(current_row, 1, qtw.QTableWidgetItem(str(tournament.rounds)))
             self.ui.tournaments_table.setItem(current_row, 2, qtw.QTableWidgetItem(str(tournament.date)))
             self.ui.tournaments_table.setItem(current_row, 3, qtw.QTableWidgetItem(str(tournament.tournament_id)))
+
+    def sort_table(self, text):
+        if text == "Name":
+            tournaments = self.tournament_dao.get_all_tournaments()
+            tournaments = sorted(tournaments, key=lambda tournament: tournament.name, reverse=True)
+            self.fill_tournaments_table(tournaments)
+        if text == "Date":
+            tournaments = self.tournament_dao.get_all_tournaments()
+            tournaments = sorted(tournaments, key=lambda tournament: tournament.date)
+            self.fill_tournaments_table(tournaments)
 
     def choose_tournament(self):
         current_row = self.ui.tournaments_table.currentRow()
@@ -205,6 +225,7 @@ class ListTournamentsWidget(qtw.QWidget):
             dialog = DeleteTournamentDialog()
             if dialog.exec_():
                 self.tournament_to_delete.emit(id)
+                self.fill_tournaments_table(self.tournament_dao.get_all_tournaments())
 
     def edit_tournament(self):
         current_row = self.ui.tournaments_table.currentRow()
