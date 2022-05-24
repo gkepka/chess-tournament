@@ -125,7 +125,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="generate_button">
+  <widget class="QPushButton" name="new_round_button">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -135,7 +135,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Generate rounds</string>
+    <string>New round</string>
    </property>
   </widget>
   <widget class="QPushButton" name="edit_tournament_button">
@@ -203,6 +203,19 @@
    </property>
    <property name="text">
     <string>Edit round</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="delete_round">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>400</y>
+     <width>271</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Delete round</string>
    </property>
   </widget>
  </widget>

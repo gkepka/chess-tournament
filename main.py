@@ -87,7 +87,6 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
     def show_tournament_edit_widget(self, tournament):
         if tournament not in self.tournament_edit_widgets:
             self.tournament_edit_widgets[tournament] = EditTournamentWidget(tournament, self)
-            self.tournament_edit_widgets[tournament].tournament_to_save.connect(self.save_edited_tournament)
             self.tournament_edit_widgets[tournament].round_to_edit.connect(self.edit_round)
             self.tournament_edit_widgets[tournament].edit_players_signal.connect(self.edit_players)
         if self.central_widget.indexOf(self.tournament_edit_widgets[tournament]) == -1:
@@ -97,6 +96,7 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
     def show_tournament_players_widget(self, tournament, players):
         if tournament not in self.tournament_player_widgets:
             self.tournament_player_widgets[tournament] = EditPlayersWidget(tournament, players, self)
+            print(self.tournament_edit_widgets[tournament].update_player_list)
             self.tournament_player_widgets[tournament].submitted.connect(self.tournament_edit_widgets[tournament].update_player_list)
             self.tournament_player_widgets[tournament].return_to_edit_tournament.connect(self.show_tournament_edit_widget)
         if self.central_widget.indexOf(self.tournament_player_widgets[tournament]) == -1:
@@ -143,10 +143,6 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
     @qtc.pyqtSlot(object, list)
     def edit_players(self, tournament, players):
         self.show_tournament_players_widget(tournament, players)
-
-    @qtc.pyqtSlot(object, list, list)
-    def save_edited_tournament(self, tournament_to_save, player_list, generated_rounds):
-        pass
 
     @qtc.pyqtSlot(int)
     def edit_round(self, round_id):

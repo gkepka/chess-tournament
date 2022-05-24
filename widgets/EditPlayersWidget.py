@@ -85,7 +85,7 @@ class EditPlayersWidget(qtw.QWidget):
 
         for i in range(self.ui.in_tournament_table.rowCount()):
             player_id = int(self.ui.in_tournament_table.item(i, 2).text())
-            players_to_remove.append(self.player_dao.get_player_by_id(player_id))
+            players_to_add.append(self.player_dao.get_player_by_id(player_id))
 
         for player in players_to_remove:
             self.players_in_tournament.discard(player)

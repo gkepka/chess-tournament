@@ -609,11 +609,30 @@ class TournamentDAO:
             (%s, %s, %s) WHERE tournament_id = %s;
             """
             cur = conn.cursor()
-            cur.execute(sql, [tournament.name, tournament.date, tournament.rounds])
+            cur.execute(sql, [tournament.name, tournament.date, tournament.rounds, tournament.tournament_id])
+
+            round_dao = RoundDAO()
+            for round in tournament.rounds_list:
+                round_dao.update_round(round)
+
+            player_params_dao = PlayerParamsDAO()
+            current_params = player_params_dao.get_player_params_for_tournament(tournament)
+
+            params_to_delete = [params for params in current_params if params not in tournament.params_list]
+            params_to_add = [params for params in tournament.params_list if params not in current_params]
+            params_to_update = [params for params in tournament.params_list if params not in params_to_add and params not in params_to_delete]
+
+            for player_params in params_to_delete:
+                player_params_dao.delete_player_params(player_params)
+
+            player_params_dao.insert_player_params_list(params_to_add)
+
+            for params in params_to_update:
+                player_params_dao.update_player_params(params)
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:

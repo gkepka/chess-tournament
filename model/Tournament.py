@@ -31,6 +31,9 @@ class Tournament:
     def add_player_params(self, player_params):
         self.params_list.append(player_params)
 
+    def del_player_params(self, player_params):
+        self.params_list.remove(player_params)
+
     def next_round(self):
         next_round = Round(self, len(self.rounds_list) + 1)
         self.rounds_list += next_round
