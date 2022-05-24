@@ -251,7 +251,7 @@ class PlayerDAO:
             nationality = row[4]
             chess_club = row[5]
 
-            player = Player(name, surname, rank, title, nationality, chess_club, player_id)
+            player = Player(name, surname, rank, nationality, title, chess_club, player_id)
             set_object(player, player_id)
             conn.commit()
             cur.close()
