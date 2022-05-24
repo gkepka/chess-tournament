@@ -44,6 +44,7 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         file_menu = menu_bar.addMenu('File')
         tournament_menu = menu_bar.addMenu('Tournament')
         player_menu = menu_bar.addMenu('Player')
+        current_menu = menu_bar.addMenu('Current')
 
         file_menu.addAction('Quit', self.close)
 
@@ -52,6 +53,8 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
 
         player_menu.addAction('Add', self.show_add_player_widget)
         player_menu.addAction('Ranking', self.show_player_ranking_widget)
+
+        current_menu.addAction('View', self.edit_current_tournament)
 
     def show_create_tournament_widget(self):
         if self.create_tournament_widget is None:
@@ -117,6 +120,12 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
             self.central_widget.addWidget(self.player_edit_widgets[player])
         self.central_widget.setCurrentWidget(self.player_edit_widgets[player])
 
+    def edit_current_tournament(self):
+        if self.current_tournament is None:
+            pass
+        else:
+            self.show_tournament_edit_widget(self.current_tournament)
+
     @qtc.pyqtSlot(str, str, int, str, str, str)
     def save_player(self, first_name, last_name,
                     ranking, nationality, title, chess_club):
@@ -141,6 +150,7 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
     def set_current_tournament(self, tournament_id):
         tournament_dao = TournamentDAO()
         self.current_tournament = tournament_dao.get_tournament_by_id(tournament_id)
+
         self.statusBar().showMessage(f'Current tournament: {self.current_tournament.name}')
 
     @qtc.pyqtSlot(int)
