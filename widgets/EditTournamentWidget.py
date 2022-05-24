@@ -10,7 +10,7 @@ from dao.DataAccessObjects import TournamentDAO
 class EditTournamentWidget(qtw.QWidget):
 
     round_to_edit = qtc.pyqtSignal(int)
-    edit_players_signal = qtc.pyqtSignal(object, list) # tournament_id, list of players (nonempty if edited earlier)
+    edit_players_signal = qtc.pyqtSignal(object) # tournament_id
 
     def __init__(self, tournament, parent=None):
         super(EditTournamentWidget, self).__init__(parent)
@@ -58,7 +58,7 @@ class EditTournamentWidget(qtw.QWidget):
     def edit_players(self):
         if len(self.tournament.rounds_list) != 0:
             qtw.QMessageBox.critical(self, 'Error', 'Can\'t change players after generating rounds')
-        self.edit_players_signal.emit(self.tournament, self.players)
+        self.edit_players_signal.emit(self.tournament)
 
     @qtc.pyqtSlot(list)
     def update_player_list(self, player_list):

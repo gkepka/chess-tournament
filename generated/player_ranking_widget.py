@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'player_ranking.ui'
+# Form implementation generated from reading ui file 'player_ranking_widget.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.1
 #
@@ -10,12 +10,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_RankingView(object):
-    def setupUi(self, RankingView):
-        RankingView.setObjectName("RankingView")
-        RankingView.resize(1024, 768)
-        self.label = QtWidgets.QLabel(RankingView)
-        self.label.setGeometry(QtCore.QRect(10, 10, 1001, 41))
+class Ui_ListPlayers(object):
+    def setupUi(self, ListPlayers):
+        ListPlayers.setObjectName("ListPlayers")
+        ListPlayers.resize(1024, 768)
+        self.label = QtWidgets.QLabel(ListPlayers)
+        self.label.setGeometry(QtCore.QRect(0, 10, 1021, 41))
         font = QtGui.QFont()
         font.setPointSize(24)
         font.setBold(True)
@@ -23,26 +23,46 @@ class Ui_RankingView(object):
         self.label.setFont(font)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
-        self.ranking_table = QtWidgets.QTableWidget(RankingView)
-        self.ranking_table.setGeometry(QtCore.QRect(25, 90, 691, 661))
-        self.ranking_table.setObjectName("ranking_table")
-        self.ranking_table.setColumnCount(0)
-        self.ranking_table.setRowCount(0)
-        self.label_2 = QtWidgets.QLabel(RankingView)
-        self.label_2.setGeometry(QtCore.QRect(740, 100, 121, 31))
+        self.players_table = QtWidgets.QTableWidget(ListPlayers)
+        self.players_table.setGeometry(QtCore.QRect(30, 110, 601, 571))
         font = QtGui.QFont()
-        font.setPointSize(16)
+        font.setPointSize(14)
+        self.players_table.setFont(font)
+        self.players_table.setObjectName("players_table")
+        self.players_table.setColumnCount(0)
+        self.players_table.setRowCount(0)
+        self.edit_button = QtWidgets.QPushButton(ListPlayers)
+        self.edit_button.setGeometry(QtCore.QRect(720, 150, 211, 41))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.edit_button.setFont(font)
+        self.edit_button.setObjectName("edit_button")
+        self.delete_button = QtWidgets.QPushButton(ListPlayers)
+        self.delete_button.setGeometry(QtCore.QRect(720, 220, 211, 41))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.delete_button.setFont(font)
+        self.delete_button.setObjectName("delete_button")
+        self.label_2 = QtWidgets.QLabel(ListPlayers)
+        self.label_2.setGeometry(QtCore.QRect(720, 290, 81, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
-        self.select_sort = QtWidgets.QComboBox(RankingView)
-        self.select_sort.setGeometry(QtCore.QRect(740, 140, 87, 32))
-        self.select_sort.setObjectName("select_sort")
+        self.sort_box = QtWidgets.QComboBox(ListPlayers)
+        self.sort_box.setGeometry(QtCore.QRect(720, 330, 211, 41))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.sort_box.setFont(font)
+        self.sort_box.setObjectName("sort_box")
 
-        self.retranslateUi(RankingView)
-        QtCore.QMetaObject.connectSlotsByName(RankingView)
+        self.retranslateUi(ListPlayers)
+        QtCore.QMetaObject.connectSlotsByName(ListPlayers)
 
-    def retranslateUi(self, RankingView):
+    def retranslateUi(self, ListPlayers):
         _translate = QtCore.QCoreApplication.translate
-        RankingView.setWindowTitle(_translate("RankingView", "Form"))
-        self.label.setText(_translate("RankingView", "Player ranking"))
-        self.label_2.setText(_translate("RankingView", "Sort by:"))
+        ListPlayers.setWindowTitle(_translate("ListPlayers", "Form"))
+        self.label.setText(_translate("ListPlayers", "Player list"))
+        self.edit_button.setText(_translate("ListPlayers", "Edit"))
+        self.delete_button.setText(_translate("ListPlayers", "Delete"))
+        self.label_2.setText(_translate("ListPlayers", "Sort by:"))

@@ -10,7 +10,7 @@ from widgets.ListTournamentsWidget import ListTournamentsWidget
 from widgets.CreateTournamentWidget import CreateTournamentWidget
 from widgets.AddPlayerWidget import AddPlayerWidget
 
-from dao.DataAccessObjects import PlayerDAO, TournamentDAO, PlayerParamsDAO, RoundDAO
+from dao.DataAccessObjects import PlayerDAO, TournamentDAO, PlayerParamsDAO
 from dao.DatabaseInitializer import DatabaseInitializer
 
 from model.Player import Player
@@ -80,8 +80,11 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
     def show_player_ranking_widget(self):
         if self.player_ranking_widget is None:
             self.player_ranking_widget = PlayerRankingWidget(self)
+            self.player_ranking_widget.player_to_edit.connect(self.edit_player)
+            self.player_ranking_widget.player_to_delete.connect(self.delete_player)
         if self.central_widget.indexOf(self.player_ranking_widget) == -1:
             self.central_widget.addWidget(self.player_ranking_widget)
+        self.player_ranking_widget.refresh()
         self.central_widget.setCurrentWidget(self.player_ranking_widget)
 
     def show_tournament_edit_widget(self, tournament):
@@ -93,14 +96,15 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
             self.central_widget.addWidget(self.tournament_edit_widgets[tournament])
         self.central_widget.setCurrentWidget(self.tournament_edit_widgets[tournament])
 
-    def show_tournament_players_widget(self, tournament, players):
+    def show_tournament_players_widget(self, tournament):
         if tournament not in self.tournament_player_widgets:
-            self.tournament_player_widgets[tournament] = EditPlayersWidget(tournament, players, self)
+            self.tournament_player_widgets[tournament] = EditPlayersWidget(tournament, self)
             print(self.tournament_edit_widgets[tournament].update_player_list)
             self.tournament_player_widgets[tournament].submitted.connect(self.tournament_edit_widgets[tournament].update_player_list)
             self.tournament_player_widgets[tournament].return_to_edit_tournament.connect(self.show_tournament_edit_widget)
         if self.central_widget.indexOf(self.tournament_player_widgets[tournament]) == -1:
             self.central_widget.addWidget(self.tournament_player_widgets[tournament])
+        self.tournament_player_widgets[tournament].refresh()
         self.central_widget.setCurrentWidget(self.tournament_player_widgets[tournament])
 
     @qtc.pyqtSlot(str, str, int, str, str, str)
@@ -140,14 +144,23 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         tournament = tournament_dao.get_tournament_by_id(tournament_id)
         self.show_tournament_edit_widget(tournament)
 
-    @qtc.pyqtSlot(object, list)
-    def edit_players(self, tournament, players):
-        self.show_tournament_players_widget(tournament, players)
+    @qtc.pyqtSlot(object)
+    def edit_players(self, tournament):
+        self.show_tournament_players_widget(tournament)
 
     @qtc.pyqtSlot(int)
     def edit_round(self, round_id):
         pass
 
+    @qtc.pyqtSlot(object)
+    def edit_player(self, player):
+        pass
+
+    @qtc.pyqtSlot(object)
+    def delete_player(self, player):
+        player_dao = PlayerDAO()
+        player_dao.delete_player(player)
+        self.player_ranking_widget.refresh()
 
 if __name__ == '__main__':
     database_initializer = DatabaseInitializer()

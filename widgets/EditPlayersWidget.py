@@ -11,10 +11,11 @@ class EditPlayersWidget(qtw.QWidget):
     submitted = qtc.pyqtSignal(list) # new list of players
     return_to_edit_tournament = qtc.pyqtSignal(object)
 
-    def __init__(self, tournament, players, parent=None):
+    def __init__(self, tournament, parent=None):
         super(EditPlayersWidget, self).__init__(parent)
         self.ui = Ui_EditPlayers()
         self.ui.setupUi(self)
+        self.players = [params.player for params in tournament.params_list]
 
         self.tournament = tournament
 
@@ -32,18 +33,18 @@ class EditPlayersWidget(qtw.QWidget):
         self.ui.in_tournament_table.setHorizontalScrollBarPolicy(qtc.Qt.ScrollBarAlwaysOff)
 
         self.player_dao = PlayerDAO()
-        if len(players) != 0:
-            self.players_in_tournament = set(players)
-        else:
-            self.players_in_tournament = self.player_dao.get_players_for_tournament(tournament.tournament_id)
+        self.players_in_tournament = set(self.players)
         self.players_not_in_tournament = self.player_dao.get_all_players() - self.players_in_tournament
-
-        self.fill_table(self.ui.not_in_tournament_table, self.players_not_in_tournament)
-        self.fill_table(self.ui.in_tournament_table, self.players_in_tournament)
 
         self.ui.add_player_button.clicked.connect(self.add_player_to_tournament)
         self.ui.delete_player_button.clicked.connect(self.delete_player_from_tournament)
         self.ui.save_button.clicked.connect(self.save_changes)
+
+    def refresh(self):
+        self.players_in_tournament = set(self.players)
+        self.players_not_in_tournament = self.player_dao.get_all_players() - self.players_in_tournament
+        self.fill_table(self.ui.not_in_tournament_table, self.players_not_in_tournament)
+        self.fill_table(self.ui.in_tournament_table, self.players_in_tournament)
 
     def fill_table(self, table, players):
         table.setRowCount(0)

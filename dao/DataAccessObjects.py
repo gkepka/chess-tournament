@@ -560,6 +560,32 @@ class TournamentDAO:
                 self.__connection_provider.free_connection(conn)
         return tournaments
 
+    def get_tournaments_for_player(self, player):
+        conn = None
+        tournaments = []
+        try:
+            conn = self.__connection_provider.get_connection()
+            sql = """
+            SELECT tournament.tournament_id
+            FROM tournament INNER JOIN player_in_tournament pit on tournament.tournament_id = pit.tournament_id
+            INNER JOIN chess_player cp on cp.player_id = pit.player_id
+            WHERE cp.player_id = %s;
+            """
+            cur = conn.cursor()
+            cur.execute(sql, [player.player_id])
+
+            for row in cur:
+                tournaments.append(self.get_tournament_by_id(row[0]))
+
+            conn.commit()
+            cur.close()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if conn is not None:
+                self.__connection_provider.free_connection(conn)
+        return tournaments
+
     def delete_tournament(self, tournament):
         conn = None
         try:
@@ -571,6 +597,14 @@ class TournamentDAO:
             cur = conn.cursor()
             cur.execute(sql, [tournament.tournament_id])
 
+            round_dao = RoundDAO()
+            for round in tournament.rounds_list:
+                round_dao.delete_round(round)
+
+            params_dao = PlayerParamsDAO()
+            for params in tournament.params_list:
+                params_dao.delete_player_params(params)
+
             set_object(None, tournament.tournament_id, Tournament)
             conn.commit()
             cur.close()
@@ -581,24 +615,7 @@ class TournamentDAO:
                 self.__connection_provider.free_connection(conn)
 
     def delete_tournament_by_id(self, tournament_id):
-        conn = None
-        try:
-            conn = self.__connection_provider.get_connection()
-            sql = """
-            DELETE FROM tournament
-            WHERE tournament_id = %s;
-            """
-            cur = conn.cursor()
-            cur.execute(sql, [tournament_id])
-
-            set_object(None, tournament_id, Tournament)
-            conn.commit()
-            cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-        finally:
-            if conn is not None:
-                self.__connection_provider.free_connection(conn)
+        self.delete_tournament(self.get_tournament_by_id(tournament_id))
 
     def update_tournament(self, tournament):
         conn = None
@@ -637,6 +654,7 @@ class TournamentDAO:
         finally:
             if conn is not None:
                 self.__connection_provider.free_connection(conn)
+
 
 class RoundDAO:
     def __init__(self):
@@ -731,6 +749,11 @@ class RoundDAO:
                     """
             cur = conn.cursor()
             cur.execute(sql, [round.round_id])
+
+            match_dao = MatchDAO()
+            for match in round.matches:
+                match_dao.delete_match(match)
+
             set_object(None, round.round_id, Round)
             conn.commit()
             cur.close()

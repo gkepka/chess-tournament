@@ -26,7 +26,10 @@ class Tournament:
             self.params_list.append(PlayerParams(player, self))
         else:
             player_params = [params for params in player_params if params.player.player_id == player.player_id]
-            self.params_list.extend(player_params)
+            if len(player_params) != 0:
+                self.params_list.extend(player_params)
+            else:
+                self.params_list.append(PlayerParams(player, self))
 
     def add_player_params(self, player_params):
         self.params_list.append(player_params)

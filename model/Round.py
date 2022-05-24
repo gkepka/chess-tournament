@@ -46,15 +46,16 @@ class Round:
 
     def __init__(self, tournament, round_no, round_id=None):
         self.__round_no = round_no
-        self.matches = self.generate_matches()
         self.tournament = tournament
         self.round_id = round_id
+        self.matches = self.generate_matches()
 
     # Generates matches for the next round`
 
     def generate_matches(self):
         RoundGames = []
-        n = self.tournament.maxRounds
+        #n = self.tournament.rounds
+        n = len(self.tournament.params_list) - 1
         if n % 2 == 0:
             n = n + 1
         Games = [[0 for _ in range(n)] for _ in range(n)]
@@ -66,7 +67,7 @@ class Round:
             puzzle(Games)
         else:
             print("Solution does not exist:(")
-        if self.tournament.maxRounds % 2 == 1:
+        if self.tournament.rounds % 2 == 1:
             for i in range(n):
                 for (j) in range(n):
                     if i > j:
