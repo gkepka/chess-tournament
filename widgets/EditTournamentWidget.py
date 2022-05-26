@@ -7,9 +7,11 @@ from generated.edit_tournament_widget import Ui_EditTournament
 from dao.DataAccessObjects import RoundDAO
 from dao.DataAccessObjects import TournamentDAO
 
+
 class EditTournamentWidget(qtw.QWidget):
 
     round_to_edit = qtc.pyqtSignal(int)
+    round_to_delete = qtc.pyqtSignal(int)
     edit_players_signal = qtc.pyqtSignal(object) # tournament_id
 
     def __init__(self, tournament, parent=None):
@@ -58,6 +60,7 @@ class EditTournamentWidget(qtw.QWidget):
     def edit_players(self):
         if len(self.tournament.rounds_list) != 0:
             qtw.QMessageBox.critical(self, 'Error', 'Can\'t change players after generating rounds')
+            return
         self.edit_players_signal.emit(self.tournament)
 
     @qtc.pyqtSlot(list)
@@ -92,11 +95,22 @@ class EditTournamentWidget(qtw.QWidget):
                 self.tournament.del_player_params(params)
 
             self.tournament_dao.update_tournament(self.tournament)
+            self.fill_rounds_table(self.tournament.rounds_list)
 
     def edit_round(self):
-        pass
+        current_row = self.ui.rounds_table.currentRow()
+        id = int(self.ui.rounds_table.item(current_row, 1).text())
+        self.round_to_edit.emit(id)
+
+    def delete_round(self):
+        current_row = self.ui.rounds_table.currentRow()
+        id = int(self.ui.rounds_table.item(current_row, 1).text())
+        self.round_to_delete.emit(id)
 
     def new_round(self):
+        if not self.tournament.can_generate():
+            qtw.QMessageBox.critical(self, 'Error', 'Can\'t generate next round after choosing a winner')
+            return
         self.tournament.next_round()
         self.append_round_to_table(self.tournament.rounds_list[len(self.tournament.rounds_list) - 1])
 

@@ -42,16 +42,21 @@ def Suduko(grid, row, col, M):
 
 class Round:
 
-    def __init__(self, tournament, round_no, round_id=None):
+    def __init__(self, tournament, round_no, matches=None, round_id=None):
         self.__round_no = round_no
         self.tournament = tournament
         self.round_id = round_id
-        self.matches = self.alternate_matches()
+        if matches is None:
+            self.matches = self.alternate_matches()
+        else:
+            self.matches = matches
 
     # Generates matches for the next round`
 
     def alternate_matches(self):
-        players = [params.player for params in self.tournament.params_list if not params.eliminated]
+        players = self.tournament.not_eliminated_players
+        if len(players) < 2:
+            return []
         random.shuffle(players)
         matches = []
         for i in range(0, len(players), 2):

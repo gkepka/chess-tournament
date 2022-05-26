@@ -37,6 +37,13 @@ class Tournament:
     def del_player_params(self, player_params):
         self.params_list.remove(player_params)
 
+    @property
+    def not_eliminated_players(self):
+        return [params.player for params in self.params_list if not params.eliminated]
+
+    def can_generate(self):
+        return len(self.not_eliminated_players) >= 2
+
     def next_round(self):
         next_round = Round(self, len(self.rounds_list) + 1)
         self.rounds_list.append(next_round)

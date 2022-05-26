@@ -10,8 +10,9 @@ from widgets.ListTournamentsWidget import ListTournamentsWidget
 from widgets.CreateTournamentWidget import CreateTournamentWidget
 from widgets.AddPlayerWidget import AddPlayerWidget
 from widgets.EditPlayerWidget import EditPlayerWidget
+from widgets.RoundWidget import RoundWidget
 
-from dao.DataAccessObjects import PlayerDAO, TournamentDAO, PlayerParamsDAO
+from dao.DataAccessObjects import PlayerDAO, TournamentDAO, PlayerParamsDAO, RoundDAO
 from dao.DatabaseInitializer import DatabaseInitializer
 
 from model.Player import Player
@@ -32,6 +33,7 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         self.tournament_edit_widgets = {}
         self.tournament_player_widgets = {}
         self.player_edit_widgets = {}
+        self.round_edit_widgets = {}
         self.resize(1024, 768)
 
         self.central_widget = qtw.QStackedWidget()
@@ -96,6 +98,7 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         if tournament not in self.tournament_edit_widgets:
             self.tournament_edit_widgets[tournament] = EditTournamentWidget(tournament, self)
             self.tournament_edit_widgets[tournament].round_to_edit.connect(self.edit_round)
+            self.tournament_edit_widgets[tournament].round_to_delete.connect(self.delete_round)
             self.tournament_edit_widgets[tournament].edit_players_signal.connect(self.edit_players)
         if self.central_widget.indexOf(self.tournament_edit_widgets[tournament]) == -1:
             self.central_widget.addWidget(self.tournament_edit_widgets[tournament])
@@ -119,6 +122,14 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
         if self.central_widget.indexOf(self.player_edit_widgets[player]) == -1:
             self.central_widget.addWidget(self.player_edit_widgets[player])
         self.central_widget.setCurrentWidget(self.player_edit_widgets[player])
+
+    def show_round_widget(self, round):
+        if round not in self.round_edit_widgets:
+            round_widget = RoundWidget(round, self)
+            self.round_edit_widgets[round] = round_widget
+        if self.central_widget.indexOf(self.round_edit_widgets[round]) == -1:
+            self.central_widget.addWidget(self.round_edit_widgets[round])
+        self.central_widget.setCurrentWidget(self.round_edit_widgets[round])
 
     def edit_current_tournament(self):
         if self.current_tournament is None:
@@ -170,6 +181,12 @@ class MainWindow(qtw.QMainWindow):  # Dziedziczy po QMainWindow
 
     @qtc.pyqtSlot(int)
     def edit_round(self, round_id):
+        round_dao = RoundDAO()
+        round = round_dao.get_round_by_id(round_id)
+        self.show_round_widget(round)
+
+    @qtc.pyqtSlot(int)
+    def delete_round(self, round_id):
         pass
 
     @qtc.pyqtSlot(object)

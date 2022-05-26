@@ -13,13 +13,18 @@ class Match:
     def get_result(self):
         return self.result
 
-    def set_result(self, result): # 1 - white wins, 0 - black wins
+    def set_result(self, result): # 1 - white wins, 0 - black wins, 0.5 - draw
         self.result = result
         if result == 1:
-            self.eliminate_player(self.player_black)
+            self.eliminate_player(self.player_black, True)
+            self.eliminate_player(self.player_white, False)
         if result == 0:
-            self.eliminate_player(self.player_white)
+            self.eliminate_player(self.player_white, True)
+            self.eliminate_player(self.player_black, False)
+        if result == 0.5:
+            self.eliminate_player(self.player_white, False)
+            self.eliminate_player(self.player_black, False)
 
-    def eliminate_player(self, player):
+    def eliminate_player(self, player, value):
         player_params = [params for params in self.tournament.params_list if params.player == player]
-        player_params[0].eliminated = True
+        player_params[0].eliminated = value

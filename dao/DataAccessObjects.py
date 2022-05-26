@@ -113,6 +113,31 @@ class MatchDAO:
                 self.__connection_provider.free_connection(conn)
         return matches
 
+    def get_matches_for_round_id(self, round_id):
+        """Returns list of matches associated with provided round"""
+        conn = None
+        matches = []
+        try:
+            conn = self.__connection_provider.get_connection()
+            sql = """
+            SELECT match_id FROM match
+            WHERE round_id = %s;
+            """
+            cur = conn.cursor()
+            cur.execute(sql, [round_id])
+
+            for row in cur:
+                matches.append(self.get_match_by_id(row[0]))
+
+            conn.commit()
+            cur.close()
+        except psycopg2.DatabaseError as error:
+            print(error)
+        finally:
+            if conn is not None:
+                self.__connection_provider.free_connection(conn)
+        return matches
+
     def delete_match(self, match):
         """Deletes match from database"""
         conn = None
@@ -713,12 +738,16 @@ class RoundDAO:
             tournament_id = row[0]
             round_no = row[1]
 
-            round = Round(None, round_no, round_id)
+            round = Round(None, round_no, [], round_id)
             set_object(round, round_id)
 
             tournament_dao = TournamentDAO()
             tournament = tournament_dao.get_tournament_by_id(tournament_id)
             round.tournament = tournament
+
+            match_dao = MatchDAO()
+            matches = match_dao.get_matches_for_round_id(round_id)
+            round.matches = matches
 
             conn.commit()
             cur.close()
@@ -786,6 +815,9 @@ class RoundDAO:
                     """
             cur = conn.cursor()
             cur.execute(sql, [round.tournament.tournament_id, round.get_round_no(), round.round_id])
+            match_dao = MatchDAO()
+            for match in round.matches:
+                match_dao.update_match(match)
 
             conn.commit()
             cur.close()

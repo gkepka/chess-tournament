@@ -8,3 +8,7 @@ class Player:
         self.title = title
         self.player_id = player_id
         self.chess_club = chess_club
+
+    @property
+    def fullname(self):
+        return self.name + " " + self.surname
