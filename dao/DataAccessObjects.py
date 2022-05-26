@@ -32,7 +32,7 @@ class MatchDAO:
             set_object(match, match_id)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -81,7 +81,7 @@ class MatchDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -106,7 +106,7 @@ class MatchDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -127,7 +127,7 @@ class MatchDAO:
             set_object(None, match.match_id, Match)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -148,7 +148,7 @@ class MatchDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -198,7 +198,7 @@ class PlayerDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -223,7 +223,7 @@ class PlayerDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -255,7 +255,7 @@ class PlayerDAO:
             set_object(player, player_id)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -276,7 +276,7 @@ class PlayerDAO:
             set_object(None, player.player_id, Player)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -296,7 +296,7 @@ class PlayerDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -325,7 +325,7 @@ class PlayerParamsDAO:
             set_object(player_params, player_params_id)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -373,7 +373,7 @@ class PlayerParamsDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -399,7 +399,7 @@ class PlayerParamsDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -447,7 +447,7 @@ class PlayerParamsDAO:
             set_object(None, player_params_id, PlayerParams)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -464,11 +464,11 @@ class PlayerParamsDAO:
             """
             cur = conn.cursor()
             cur.execute(sql, [player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause(),
-                        player_params.player.player_id, player_params.tournament.tournament_id], player_params.eliminated)
+                        player_params.eliminated, player_params.player.player_id, player_params.tournament.tournament_id])
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -495,7 +495,7 @@ class TournamentDAO:
             set_object(tournament, tournament_id)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -530,7 +530,7 @@ class TournamentDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -554,7 +554,7 @@ class TournamentDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -580,7 +580,7 @@ class TournamentDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -609,7 +609,7 @@ class TournamentDAO:
             set_object(None, tournament.tournament_id, Tournament)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -681,15 +681,14 @@ class RoundDAO:
             cur.execute(sql, [round.tournament.tournament_id, round.get_round_no()])
             row = cur.fetchone()
             round_id = row[0]
-
+            round.round_id = round_id
+            set_object(round, round_id)
+            conn.commit()
             match_dao = MatchDAO()
             for match in round.matches:
                 match_dao.insert_match(match)
-
-            set_object(round, round_id)
-            conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -723,7 +722,7 @@ class RoundDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -747,7 +746,7 @@ class RoundDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -771,7 +770,7 @@ class RoundDAO:
             set_object(None, round.round_id, Round)
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:
@@ -790,7 +789,7 @@ class RoundDAO:
 
             conn.commit()
             cur.close()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except psycopg2.DatabaseError as error:
             print(error)
         finally:
             if conn is not None:

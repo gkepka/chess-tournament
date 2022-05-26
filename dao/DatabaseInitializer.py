@@ -55,7 +55,7 @@ class DatabaseInitializer:
         round_id INT NOT NULL,
         player_white_id INT NOT NULL,
         player_black_id INT NOT NULL,
-        result INT NOT NULL,
+        result INT,
         FOREIGN KEY (tournament_id) REFERENCES tournament(tournament_id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (player_white_id) REFERENCES chess_player(player_id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (player_black_id) REFERENCES chess_player(player_id) ON UPDATE CASCADE ON DELETE CASCADE,

@@ -54,7 +54,7 @@ class Round:
         players = [params.player for params in self.tournament.params_list if not params.eliminated]
         random.shuffle(players)
         matches = []
-        for i in range(len(players), 2):
+        for i in range(0, len(players), 2):
             if i + 1 != len(players):
                 matches.append(Match(self.tournament, self, players[i], players[i+1], None, None))
         return matches
