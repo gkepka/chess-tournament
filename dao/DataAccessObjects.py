@@ -313,12 +313,12 @@ class PlayerParamsDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            INSERT INTO player_in_tournament(player_id, tournament_id, current_score, current_buchholz, did_pause)
-            VALUES (%s, %s, %s, %s, %s) RETURNING player_in_tournament_id;
+            INSERT INTO player_in_tournament(player_id, tournament_id, current_score, current_buchholz, did_pause, eliminated)
+            VALUES (%s, %s, %s, %s, %s, %s) RETURNING player_in_tournament_id;
             """
             cur = conn.cursor()
             cur.execute(sql, [player_params.player.player_id, player_params.tournament.tournament_id,
-                        player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause()])
+                        player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause(), player_params.eliminated])
 
             player_params_id = cur.fetchone()[0]
             player_params.player_params_id = player_params_id
@@ -343,7 +343,7 @@ class PlayerParamsDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            SELECT player_id, tournament_id, current_score, current_buchholz, did_pause
+            SELECT player_id, tournament_id, current_score, current_buchholz, did_pause, eliminated
             FROM player_in_tournament
             WHERE player_in_tournament_id = %s;
             """
@@ -369,6 +369,7 @@ class PlayerParamsDAO:
             player_params.set_buchholz(row[3])
             player_params.set_did_pause(row[4])
             player_params.player_params_id = player_params_id
+            player_params.eliminated = row[5]
 
             conn.commit()
             cur.close()
@@ -458,12 +459,12 @@ class PlayerParamsDAO:
         try:
             conn = self.__connection_provider.get_connection()
             sql = """
-            UPDATE player_in_tournament SET (current_score, current_buchholz, did_pause) =
-            (%s, %s, %s) WHERE player_id = %s AND tournament_id = %s;
+            UPDATE player_in_tournament SET (current_score, current_buchholz, did_pause, eliminated) =
+            (%s, %s, %s, %s) WHERE player_id = %s AND tournament_id = %s;
             """
             cur = conn.cursor()
             cur.execute(sql, [player_params.get_points(), player_params.get_buchholz(), player_params.get_did_pause(),
-                        player_params.player.player_id, player_params.tournament.tournament_id])
+                        player_params.player.player_id, player_params.tournament.tournament_id], player_params.eliminated)
 
             conn.commit()
             cur.close()
@@ -629,8 +630,15 @@ class TournamentDAO:
             cur.execute(sql, [tournament.name, tournament.date, tournament.rounds, tournament.tournament_id])
 
             round_dao = RoundDAO()
-            for round in tournament.rounds_list:
+            current_rounds = round_dao.get_rounds_by_tournament_id(tournament.tournament_id)
+            rounds_to_add = [round for round in tournament.rounds_list if round not in current_rounds]
+            rounds_to_update = [round for round in current_rounds if round in tournament.rounds_list]
+
+            for round in rounds_to_update:
                 round_dao.update_round(round)
+
+            for round in rounds_to_add:
+                round.round_id = round_dao.insert_round(round)
 
             player_params_dao = PlayerParamsDAO()
             current_params = player_params_dao.get_player_params_for_tournament(tournament)
@@ -671,6 +679,12 @@ class RoundDAO:
                     """
             cur = conn.cursor()
             cur.execute(sql, [round.tournament.tournament_id, round.get_round_no()])
+            row = cur.fetchone()
+            round_id = row[0]
+
+            match_dao = MatchDAO()
+            for match in round.matches:
+                match_dao.insert_match(match)
 
             set_object(round, round_id)
             conn.commit()

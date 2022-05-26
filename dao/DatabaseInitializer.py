@@ -32,6 +32,7 @@ class DatabaseInitializer:
         current_score INT NOT NULL,
         current_buchholz INT NOT NULL,
         did_pause BOOL NOT NULL,
+        eliminated BOOL NOT NULL,
         FOREIGN KEY (player_id) REFERENCES chess_player(player_id) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (tournament_id) REFERENCES tournament(tournament_id) ON UPDATE CASCADE ON DELETE CASCADE,
         UNIQUE (player_id, tournament_id)

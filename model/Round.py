@@ -1,11 +1,9 @@
 from model.Match import Match
+import random
 
 # Solves sudoku
 
-M = 6
-
-
-def puzzle(a):
+def puzzle(a, M):
     for i in range(M):
         for j in range(M):
             print(a[i][j], end=" ")
@@ -13,31 +11,31 @@ def puzzle(a):
 
 
 def solve(grid, row, col, num):
-    for x in range(6):
+    for x in range(col):
         if grid[row][x] == num:
             return False
 
-    for x in range(6):
+    for x in range(row):
         if grid[x][col] == num:
             return False
 
     return True
 
 
-def Suduko(grid, row, col):
+def Suduko(grid, row, col, M):
     if (row == M - 1 and col == M):
         return True
     if col == M:
         row += 1
         col = 0
     if grid[row][col] > 0:
-        return Suduko(grid, row, col + 1)
+        return Suduko(grid, row, col + 1, M)
     for num in range(1, M + 1, 1):
 
         if solve(grid, row, col, num):
 
             grid[row][col] = num
-            if Suduko(grid, row, col + 1):
+            if Suduko(grid, row, col + 1, M):
                 return True
         grid[row][col] = 0
     return False
@@ -48,9 +46,18 @@ class Round:
         self.__round_no = round_no
         self.tournament = tournament
         self.round_id = round_id
-        self.matches = self.generate_matches()
+        self.matches = self.alternate_matches()
 
     # Generates matches for the next round`
+
+    def alternate_matches(self):
+        players = [params.player for params in self.tournament.params_list if not params.eliminated]
+        random.shuffle(players)
+        matches = []
+        for i in range(len(players), 2):
+            if i + 1 != len(players):
+                matches.append(Match(self.tournament, self, players[i], players[i+1], None, None))
+        return matches
 
     def generate_matches(self):
         RoundGames = []
@@ -63,8 +70,8 @@ class Round:
             for j in range(n):
                 if i == j:
                     Games[i][j] = n
-        if (Suduko(Games, 0, 0)):
-            puzzle(Games)
+        if (Suduko(Games, 0, 0, n)):
+            puzzle(Games, n)
         else:
             print("Solution does not exist:(")
         if self.tournament.rounds % 2 == 1:
@@ -109,7 +116,7 @@ if __name__ == '__main__':
             [4, 5, 0, 0, 6, 0],
             [5, 2, 0, 0, 0, 6]]
 
-    if (Suduko(grid, 0, 0)):
-        puzzle(grid)
+    if (Suduko(grid, 0, 0, 6)):
+        puzzle(grid, 6)
     else:
         print("Solution does not exist")

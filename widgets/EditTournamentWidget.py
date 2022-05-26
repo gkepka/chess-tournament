@@ -98,5 +98,5 @@ class EditTournamentWidget(qtw.QWidget):
 
     def new_round(self):
         self.tournament.next_round()
-        self.append_round_to_table(self.tournament.rounds[len(self.tournament.rounds)])
+        self.append_round_to_table(self.tournament.rounds_list[len(self.tournament.rounds_list) - 1])
 

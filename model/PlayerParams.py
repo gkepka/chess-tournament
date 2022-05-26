@@ -5,6 +5,7 @@ class PlayerParams:
         self.__points = 0
         self.__buchholz = 0
         self.__did_pause = False
+        self.eliminated = False
 
     def set_points(self, points):
         if points < 0:

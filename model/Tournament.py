@@ -39,7 +39,7 @@ class Tournament:
 
     def next_round(self):
         next_round = Round(self, len(self.rounds_list) + 1)
-        self.rounds_list += next_round
+        self.rounds_list.append(next_round)
 
     # Function count_scores counts number of points of a player(playerID)
     def count_scores(self, playerID):
