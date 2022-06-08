@@ -79,6 +79,9 @@ class Ui_EditTournament(object):
         self.delete_round = QtWidgets.QPushButton(EditTournament)
         self.delete_round.setGeometry(QtCore.QRect(580, 400, 271, 51))
         self.delete_round.setObjectName("delete_round")
+        self.ranking_button = QtWidgets.QPushButton(EditTournament)
+        self.ranking_button.setGeometry(QtCore.QRect(580, 230, 271, 51))
+        self.ranking_button.setObjectName("ranking_button")
 
         self.retranslateUi(EditTournament)
         QtCore.QMetaObject.connectSlotsByName(EditTournament)
@@ -96,3 +99,4 @@ class Ui_EditTournament(object):
         self.edit_players_button.setText(_translate("EditTournament", "Change players"))
         self.edit_rounds_button.setText(_translate("EditTournament", "Edit round"))
         self.delete_round.setText(_translate("EditTournament", "Delete round"))
+        self.ranking_button.setText(_translate("EditTournament", "Show ranking"))

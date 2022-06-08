@@ -12,7 +12,8 @@ class EditTournamentWidget(qtw.QWidget):
 
     round_to_edit = qtc.pyqtSignal(int)
     round_to_delete = qtc.pyqtSignal(int)
-    edit_players_signal = qtc.pyqtSignal(object) # tournament_id
+    edit_players_signal = qtc.pyqtSignal(object)
+    show_ranking_signal = qtc.pyqtSignal(object)
 
     def __init__(self, tournament, parent=None):
         super(EditTournamentWidget, self).__init__(parent)
@@ -41,6 +42,7 @@ class EditTournamentWidget(qtw.QWidget):
         self.ui.edit_tournament_button.clicked.connect(self.save_changes)
         self.ui.edit_rounds_button.clicked.connect(self.edit_round)
         self.ui.new_round_button.clicked.connect(self.new_round)
+        self.ui.ranking_button.clicked.connect(self.show_ranking)
 
     def fill_rounds_table(self, rounds):
         self.ui.rounds_table.setRowCount(0)
@@ -62,6 +64,9 @@ class EditTournamentWidget(qtw.QWidget):
             qtw.QMessageBox.critical(self, 'Error', 'Can\'t change players after generating rounds')
             return
         self.edit_players_signal.emit(self.tournament)
+
+    def show_ranking(self):
+        self.show_ranking_signal.emit(self.tournament)
 
     @qtc.pyqtSlot(list)
     def update_player_list(self, player_list):

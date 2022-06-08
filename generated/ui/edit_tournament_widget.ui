@@ -218,6 +218,19 @@
     <string>Delete round</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="ranking_button">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>230</y>
+     <width>271</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show ranking</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

@@ -95,6 +95,9 @@ class Tournament:
     def print_scores(self):
         print(self.get_scores())
 
+    def get_params_for_player(self, player):
+        return [params for params in self.params_list if params.player == player][0]
+
     # Function updates the scores
 
     def set_match_score(self, match):
@@ -105,3 +108,21 @@ class Tournament:
             self.scores[match.player_black.playerID][match.player_white.playerID] = 0
         if match.result == 0.5:
             self.scores[match.player_black.playerID][match.player_white.playerID] = 0.5
+
+    def set_points(self):
+        points = {}
+        for round in self.rounds_list:
+            for match in round.matches:
+                if match.result is None:
+                    points[match.player_white] = points[match.player_black] = 0
+                    continue
+                if match.player_white not in points:
+                    points[match.player_white] = match.result
+                else:
+                    points[match.player_white] = points[match.player_white] + match.result
+                if match.player_black not in points:
+                    points[match.player_black] = (1 - match.result)
+                else:
+                    points[match.player_black] = points[match.player_black] + (1 - match.result)
+        for player in points.keys():
+            self.get_params_for_player(player).set_points(points[player])
