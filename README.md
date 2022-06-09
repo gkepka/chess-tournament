@@ -1,3 +1,5 @@
+# chess-tournament
+
 Narzędzie do organizacji turniejów szachowych. W obecnej postaci pozwala na wprowadzanie i edycję danych graczy, turniejów, przydzielanie graczy do turniejów, generowanie par do gry zgodnie z systemem pucharowym.
 
 # Uruchomienie:
@@ -11,3 +13,7 @@ database=chess-tournament
 user=chess_user
 password=password
 ```
+
+# Zastosowane technologie:
+- PyQt5 do utworzenia interfejsu użytkownika
+- PostgreSQL wraz ze sterownikiem `psycopg2` do persystencji danych.
