@@ -67,28 +67,28 @@ class Tournament:
 
     # Sorts tuple by given element
 
-    def Sort_Tuple(self, tup, elem):
-
-        tup.sort(key=lambda x: x[elem], reverse=True)
-        return tup
-
+    #def Sort_Tuple(self, tup, elem):
+    #
+    #    tup.sort(key=lambda x: x[elem], reverse=True)
+    #    return tup
+    #
     # Function get_scores counts points and Buholtz of all the players than sorts the scores, returns current scores
-
-    def get_scores(self):
-        points = []
-        for i in range(len(self.params_list)):
-            points.append((i, self.count_scores(i), self.count_Buholtz(i)))
-        self.Sort_Tuple(points, 1)
-        for i in range(len(self.params_list) - 1):
-            if points[i][1] == points[i + 1][1]:
-                if self.count_Buholtz(i + 1) > self.count_Buholtz(i):
-                    points[i], points[i + 1] = points[i + 1], points[i]
-        for i in range(len(self.params_list) - 1):
-            if points[i][1] == points[i + 1]:
-                if points[i][2] == points[i + 1][2]:
-                    if self.scores[points[i][0]][points[i + 1][0]] == 0:
-                        points[i], points[i + 1] = points[i + 1], points[i]
-        return points
+    #
+    #def get_scores(self):
+    #    points = []
+    #    for i in range(len(self.params_list)):
+    #        points.append((i, self.count_scores(i), self.count_Buholtz(i)))
+    #    self.Sort_Tuple(points, 1)
+    #    for i in range(len(self.params_list) - 1):
+    #        if points[i][1] == points[i + 1][1]:
+    #            if self.count_Buholtz(i + 1) > self.count_Buholtz(i):
+    #                points[i], points[i + 1] = points[i + 1], points[i]
+    #    for i in range(len(self.params_list) - 1):
+    #        if points[i][1] == points[i + 1]:
+    #            if points[i][2] == points[i + 1][2]:
+    #                if self.scores[points[i][0]][points[i + 1][0]] == 0:
+    #                    points[i], points[i + 1] = points[i + 1], points[i]
+    #    return points
 
     # Function prints scores
 
