@@ -3,42 +3,42 @@ import random
 
 # Solves sudoku
 
-def puzzle(a, M):
-    for i in range(M):
-        for j in range(M):
-            print(a[i][j], end=" ")
-        print()
-
-
-def solve(grid, row, col, num):
-    for x in range(col):
-        if grid[row][x] == num:
-            return False
-
-    for x in range(row):
-        if grid[x][col] == num:
-            return False
-
-    return True
-
-
-def Suduko(grid, row, col, M):
-    if (row == M - 1 and col == M):
-        return True
-    if col == M:
-        row += 1
-        col = 0
-    if grid[row][col] > 0:
-        return Suduko(grid, row, col + 1, M)
-    for num in range(1, M + 1, 1):
-
-        if solve(grid, row, col, num):
-
-            grid[row][col] = num
-            if Suduko(grid, row, col + 1, M):
-                return True
-        grid[row][col] = 0
-    return False
+#def puzzle(a, M):
+#    for i in range(M):
+#        for j in range(M):
+#            print(a[i][j], end=" ")
+#        print()
+#
+#
+#def solve(grid, row, col, num):
+#    for x in range(col):
+#        if grid[row][x] == num:
+#            return False
+#
+#    for x in range(row):
+#        if grid[x][col] == num:
+#            return False
+#
+#    return True
+#
+#
+#def Suduko(grid, row, col, M):
+#    if (row == M - 1 and col == M):
+#        return True
+#    if col == M:
+#        row += 1
+#        col = 0
+#    if grid[row][col] > 0:
+#        return Suduko(grid, row, col + 1, M)
+#    for num in range(1, M + 1, 1):
+#
+#        if solve(grid, row, col, num):
+#
+#            grid[row][col] = num
+#            if Suduko(grid, row, col + 1, M):
+#              return True
+#       grid[row][col] = 0
+#    return False
 
 class Round:
 
